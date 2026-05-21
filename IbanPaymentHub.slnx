@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="IbanPaymentHub.Api/IbanPaymentHub.Api.csproj" />
+  <Project Path="IbanPaymentHub.Tests/IbanPaymentHub.Tests.csproj" />
+</Solution>
