@@ -24,7 +24,7 @@ stateDiagram-v2
     [*] --> Pending: create payment
     Pending --> Processing: process
     Processing --> Settled: success
-    Processing --> Failed: reference contains FAIL
+    Processing --> Failed: simulateFailure=true
     Settled --> [*]
     Failed --> [*]
 ```
@@ -33,7 +33,7 @@ stateDiagram-v2
 
 - IBAN normalization + ISO 13616 mod-97 validation
 - Create payment orders (`Fast` / `Eft`)
-- Process / settle payments (demo rules)
+- Process / settle payments (optional explicit `simulateFailure` for demos)
 - List payments and produce a reconciliation summary
 - OpenAPI document included
 
@@ -45,16 +45,18 @@ dotnet test
 dotnet run --project IbanPaymentHub.Api
 ```
 
+API base URL (HTTP): `http://localhost:5059`
+
 ## Example flow
 
 ```bash
 # Validate IBAN
-curl -s -X POST http://localhost:5080/api/iban/validate \
+curl -s -X POST http://localhost:5059/api/iban/validate \
   -H "Content-Type: application/json" \
   -d "{\"iban\":\"DE89 3704 0044 0532 0130 00\"}"
 
 # Create payment
-curl -s -X POST http://localhost:5080/api/payments \
+curl -s -X POST http://localhost:5059/api/payments \
   -H "Content-Type: application/json" \
   -d "{
     \"debtorIban\":\"DE89370400440532013000\",
@@ -66,11 +68,11 @@ curl -s -X POST http://localhost:5080/api/payments \
   }"
 
 # Process + reconcile
-curl -s -X POST http://localhost:5080/api/payments/PAY-XXXXXXXX/process
-curl -s http://localhost:5080/api/reconciliation
+curl -s -X POST http://localhost:5059/api/payments/PAY-XXXXXXXX/process
+curl -s http://localhost:5059/api/reconciliation
 ```
 
-Tip: put `FAIL` in `reference` to simulate a downstream reject.
+Tip: set `"simulateFailure": true` on create to exercise the failed settlement path in demos/tests.
 
 ## API
 
