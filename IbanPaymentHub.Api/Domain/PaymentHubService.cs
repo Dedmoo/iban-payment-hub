@@ -5,10 +5,13 @@ public sealed class PaymentHubService
     private readonly object _gate = new();
     private readonly Dictionary<string, PaymentOrder> _payments = new(StringComparer.Ordinal);
 
-    public object ValidateIban(string iban)
+    public object ValidateIban(string? iban)
     {
-        var normalized = IbanValidator.Normalize(iban);
+        if (string.IsNullOrWhiteSpace(iban))
+            return new { iban = (string?)null, valid = false, country = (string?)null, error = "IBAN is required." };
+
         var valid = IbanValidator.IsValid(iban);
+        var normalized = IbanValidator.Normalize(iban);
         return new
         {
             iban = normalized,
