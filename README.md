@@ -171,3 +171,5 @@ dotnet test
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+<!-- docs: maintenance pass 2026-05-21 -->
