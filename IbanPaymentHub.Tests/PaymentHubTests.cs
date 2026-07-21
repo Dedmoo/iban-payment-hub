@@ -37,7 +37,7 @@ public class PaymentHubTests
     }
 
     [Fact]
-    public void Process_WithFailReference_MarksFailed()
+    public void Process_WithSimulateFailure_MarksFailed()
     {
         var hub = new PaymentHubService();
         var created = hub.CreatePayment(new CreatePaymentRequest(
@@ -46,7 +46,8 @@ public class PaymentHubTests
             10m,
             "TRY",
             "Eft",
-            "FORCE-FAIL-CASE"));
+            "INV-FAIL-SIM",
+            SimulateFailure: true));
 
         var processed = hub.Process(created.PaymentId);
         Assert.Equal(PaymentStatus.Failed, processed.Status);
@@ -74,7 +75,7 @@ public class PaymentHubTests
         var ok = hub.CreatePayment(new CreatePaymentRequest(
             ValidDebtor, ValidCreditor, 20m, "TRY", "Fast", "OK"));
         var bad = hub.CreatePayment(new CreatePaymentRequest(
-            ValidDebtor, ValidCreditor, 30m, "TRY", "Eft", "FAIL-ME"));
+            ValidDebtor, ValidCreditor, 30m, "TRY", "Eft", "REJECTED", SimulateFailure: true));
         hub.Process(ok.PaymentId);
         hub.Process(bad.PaymentId);
 

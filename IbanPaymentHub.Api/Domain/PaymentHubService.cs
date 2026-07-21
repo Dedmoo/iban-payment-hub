@@ -53,6 +53,7 @@ public sealed class PaymentHubService
             Currency = currency,
             Rail = rail,
             Reference = string.IsNullOrWhiteSpace(request.Reference) ? "N/A" : request.Reference.Trim(),
+            SimulateFailure = request.SimulateFailure,
             Status = PaymentStatus.Pending
         };
 
@@ -74,11 +75,10 @@ public sealed class PaymentHubService
 
             order.Status = PaymentStatus.Processing;
 
-            // Demo settlement rules
-            if (order.Reference.Contains("FAIL", StringComparison.OrdinalIgnoreCase))
+            if (order.SimulateFailure)
             {
                 order.Status = PaymentStatus.Failed;
-                order.FailureReason = "Downstream reject (demo reference contains FAIL).";
+                order.FailureReason = "Downstream rail rejected the payment (simulated).";
             }
             else
             {

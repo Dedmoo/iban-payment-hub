@@ -23,6 +23,7 @@ public sealed class PaymentOrder
     public required string Currency { get; init; }
     public required PaymentRail Rail { get; init; }
     public required string Reference { get; init; }
+    public bool SimulateFailure { get; init; }
     public PaymentStatus Status { get; set; } = PaymentStatus.Pending;
     public string? FailureReason { get; set; }
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
@@ -35,7 +36,8 @@ public sealed record CreatePaymentRequest(
     decimal Amount,
     string Currency,
     string Rail,
-    string Reference);
+    string Reference,
+    bool SimulateFailure = false);
 
 public sealed record ValidateIbanRequest(string Iban);
 
