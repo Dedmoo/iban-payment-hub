@@ -37,6 +37,76 @@ stateDiagram-v2
 - List payments and produce a reconciliation summary
 - OpenAPI document included
 
+## Domain model
+
+Class-level view of the main types and how they relate (fields, operations and dependencies).
+
+```mermaid
+classDiagram
+    direction TB
+    class PaymentHubService {
+        -_payments: Dictionary~string, PaymentOrder~
+        +ValidateIban(iban) object
+        +CreatePayment(request) PaymentOrder
+        +Process(paymentId) PaymentOrder
+        +Get(paymentId) PaymentOrder
+        +List() List~PaymentOrder~
+        +Reconcile() ReconciliationReport
+    }
+    class IbanValidator {
+        <<utility>>
+        +IsValid(iban) bool
+        +Normalize(iban) string
+    }
+    class PaymentOrder {
+        +PaymentId: string
+        +DebtorIban: string
+        +CreditorIban: string
+        +Amount: decimal
+        +Currency: string
+        +Rail: PaymentRail
+        +Reference: string
+        +Status: PaymentStatus
+        +FailureReason: string
+        +CreatedAt: DateTimeOffset
+        +SettledAt: DateTimeOffset
+    }
+    class PaymentRail {
+        <<enumeration>>
+        Fast
+        Eft
+    }
+    class PaymentStatus {
+        <<enumeration>>
+        Pending
+        Processing
+        Settled
+        Failed
+    }
+    class CreatePaymentRequest {
+        +DebtorIban: string
+        +CreditorIban: string
+        +Amount: decimal
+        +Currency: string
+        +Rail: string
+        +Reference: string
+        +SimulateFailure: bool
+    }
+    class ReconciliationReport {
+        +Total: int
+        +Settled: int
+        +Failed: int
+        +PendingOrProcessing: int
+        +SettledAmount: decimal
+    }
+    PaymentHubService o-- PaymentOrder
+    PaymentHubService ..> IbanValidator
+    PaymentOrder --> PaymentRail
+    PaymentOrder --> PaymentStatus
+    PaymentHubService ..> CreatePaymentRequest
+    PaymentHubService ..> ReconciliationReport
+```
+
 ## Quick start
 
 ```bash
